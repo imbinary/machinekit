@@ -29,14 +29,14 @@ loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[TRAJ]AX
 # load low-level drivers
 loadrt hal_bb_gpio output_pins=816,822,823,824,825,826,914,923,925 input_pins=807,808,809,810,817,911,913
 loadrt [PRUCONF](DRIVER) prucode=$(HAL_RTMOD_DIR)/[PRUCONF](PRUBIN) [PRUCONF](CONFIG) halname=hpg
-loadrt pid count=3
-loadrt limit1 count=3
+loadrt pid count=2
+loadrt limit1 count=2
 
 
 # Python user-mode HAL module to read ADC value and generate a thermostat output for PWM
 # t = Thermistor table (only epcos_B57560G1104 or 1 supported for now)
 # a = analog input channel
-loadusr -Wn Therm hal_temp_bbb -n Therm -c 04:epcos_B57560G1104,05:epcos_B57560G1104,03:epcos_B57560G1104 -b CRAMPS
+loadusr -Wn Therm hal_temp_bbb -n Therm -c 04:epcos_B57560G1104,05:epcos_B57560G1104 -b CRAMPS
 
 # ################################################
 # THREADS
@@ -48,10 +48,8 @@ addf motion-command-handler               servo-thread
 addf motion-controller                    servo-thread
 addf pid.0.do-pid-calcs                   servo-thread
 addf pid.1.do-pid-calcs                   servo-thread
-addf pid.2.do-pid-calcs                   servo-thread
 addf limit1.0                             servo-thread
 addf limit1.1                             servo-thread
-addf limit1.2                             servo-thread
 addf hpg.update             servo-thread
 addf bb_gpio.write                        servo-thread
 
@@ -340,32 +338,32 @@ newsig bed.temp.meas float
 setp hpg.pwmgen.00.pwm_period       10000000
 
 # Bed Heater FET 1
-setp hpg.pwmgen.00.out.00.pin       77
+setp hpg.pwmgen.00.out.00.pin       811
 setp hpg.pwmgen.00.out.00.enable    1
 setp hpg.pwmgen.00.out.00.value     0.0
 
 # E0 Heater FET 2
-setp hpg.pwmgen.00.out.01.pin       80
+setp hpg.pwmgen.00.out.01.pin       915
 setp hpg.pwmgen.00.out.01.enable    1
 setp hpg.pwmgen.00.out.01.value     0.0
 
 # E1 Heater FET 3
-setp hpg.pwmgen.00.out.02.pin       147
+setp hpg.pwmgen.00.out.02.pin       927
 setp hpg.pwmgen.00.out.02.enable    1
 setp hpg.pwmgen.00.out.02.value     0.0
 
 # E2 Heater FET 4
-setp hpg.pwmgen.00.out.03.pin       35
+setp hpg.pwmgen.00.out.03.pin       921
 setp hpg.pwmgen.00.out.03.enable    1
 setp hpg.pwmgen.00.out.03.value     0.0
 
 # FET 5 - Fan / LED
-setp hpg.pwmgen.00.out.04.pin       52
+setp hpg.pwmgen.00.out.04.pin       941
 setp hpg.pwmgen.00.out.04.enable    1
 setp hpg.pwmgen.00.out.04.value     0.0
 
 # FET 6 - Fan / LED
-setp hpg.pwmgen.00.out.05.pin       34
+setp hpg.pwmgen.00.out.05.pin       922
 setp hpg.pwmgen.00.out.05.enable    1
 setp hpg.pwmgen.00.out.05.value     0.0
 
@@ -402,18 +400,14 @@ net bed.heaterl => hpg.pwmgen.00.out.00.value
 setp limit1.1.min 0
 
 
-# Limit heater PWM to positive values
-# PWM mimics hm2 implementation, which generates output for negative values
-setp limit1.2.min 0
-
 # PID Parameters for adjusting temperature control
 # Extruder
 #setp pid.0.FF0      0
 #setp pid.0.FF1      0
 #setp pid.0.FF2      0
-setp pid.0.Pgain  0.30
-setp pid.0.Igain  0.00001
-setp pid.0.Dgain  0.9375
+setp pid.0.Pgain  41.26
+setp pid.0.Igain  3.89
+setp pid.0.Dgain  109.52
 setp pid.0.maxerrorI 1.0
 setp pid.0.bias    0.5
 setp pid.0.enable   1

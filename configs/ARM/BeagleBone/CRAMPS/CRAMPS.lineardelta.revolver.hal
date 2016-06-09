@@ -37,7 +37,7 @@ loadrt limit1 count=3
 # Python user-mode HAL module to read ADC value and generate a thermostat output for PWM
 # t = Thermistor table (only epcos_B57560G1104 or 1 supported for now)
 # a = analog input channel
-loadusr -Wn Therm hal_temp_bbb -n Therm -c 04:epcos_B57560G1104,05:epcos_B57560G1104,03:epcos_B57560G1104 -b CRAMPS
+loadusr -Wn Therm hal_temp_bbb -n Therm -c 04:epcos_B57560G1104,05:epcos_B57560G1104,06:epcos_B57560G1104 -b CRAMPS
 
 # ################################################
 # THREADS
@@ -465,7 +465,7 @@ net bed.heaterl => hpg.pwmgen.00.out.00.value
 setp limit1.1.min 0
 
 # PID for Extruder 1 temperature control
-net e1.temp.meas    <= Therm.ch-03.value
+net e1.temp.meas    <= Therm.ch-06.value
 net e1.temp.meas    => pid.2.feedback
 
 sets e1.temp.set  0
