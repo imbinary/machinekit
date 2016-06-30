@@ -1,20 +1,10 @@
+
 #!/bin/sh
 
 # M104: Set Extruder Temperature
 # Example: M104 P200
 # Mandatory parameter 'P' specifies the temperature setpoint.
 
-## Optional parameter 'Q' tool selector (Q1 -> e0) (Q2 -> e1) (default -> e0)
-
-temperature=$1
-tool=$2
-
-if  [ "$tool" = "1.000000" ]||[ "$tool" = "-1.000000" ]; then
-  halcmd sets e0.temp.set $temperature
-fi
-if [ "$tool" = "2.000000" ]; then
-  halcmd sets e1.temp.set $temperature
-fi
+halcmd sets e0.temp.set $1
 
 exit 0
-

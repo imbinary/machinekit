@@ -38,6 +38,10 @@ loadrt limit1 count=2
 # a = analog input channel
 loadusr -Wn Therm hal_temp_bbb -n Therm -c 04:epcos_B57560G1104,05:epcos_B57560G1104 -b CRAMPS
 
+loadrt comp
+loadrt constant
+
+
 # ################################################
 # THREADS
 # ################################################
@@ -52,7 +56,13 @@ addf limit1.0                             servo-thread
 addf limit1.1                             servo-thread
 addf hpg.update             servo-thread
 addf bb_gpio.write                        servo-thread
+addf comp.0	servo-thread
 
+
+###FDM - FANS
+newcomp fdm-f0 timer=100
+newpin fdm-f0 fdm-f0.set float io
+ready fdm-f0
 
 # ######################################################
 # Axis-of-motion Specific Configs (not the GUI)
@@ -372,7 +382,20 @@ net e0.temp.meas    <= Therm.ch-04.value
 net e0.temp.meas    => pid.0.feedback
 
 sets e0.temp.set  0
-net e0.temp.set     => pid.0.command
+net e0.temp.set motion.analog-out-02 => pid.0.command
+
+#net e0.temp.set => Extruder0.Temp.set
+#net temp.done motion.digital-in-02 <= Extruder0.Temp.set.done
+
+#net s siggen.0.sine => comp.0.in1
+#net n constant.0.out => comp.0.in0
+#net a comp.0.out => parport.0.pin-16-out
+
+setp constant.0.value 50
+
+net e0.temp.meas => comp.0.in1
+net e0.temp.set => comp.0.in0
+net a comp.0.out => motion.digital-in-02
 
 net e0.heater  <= pid.0.output
 net e0.heater  => limit1.0.in

@@ -25,7 +25,7 @@ setp lineardeltakins.R [MACHINE]DELTA_R
 # motion controller, get name and thread periods from ini file
 loadrt tp
 loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[TRAJ]AXES tp=tp kins=lineardeltakins
-loadrt mux_generic config="s5u,s5u"
+loadrt mux_generic config="s3u,s3u"
 
 # load low-level drivers
 loadrt hal_bb_gpio output_pins=816,822,823,824,825,826,914,923,925 input_pins=807,808,809,810,817,911,913
@@ -484,7 +484,7 @@ net e1.heaterl => hpg.pwmgen.00.out.02.value
 setp limit1.2.min 0
 
 # PID Parameters for adjusting temperature control
-# Extruder
+# Extruder 0
 #setp pid.0.FF0      0
 #setp pid.0.FF1      0
 #setp pid.0.FF2      0
@@ -507,8 +507,7 @@ setp pid.1.bias    0.5
 setp pid.1.enable   1
 
 
-# PID Parameters for adjusting temperature control
-# Extruder
+# Extruder 1
 #setp pid.2.FF0      0
 #setp pid.2.FF1      0
 #setp pid.2.FF2      0
