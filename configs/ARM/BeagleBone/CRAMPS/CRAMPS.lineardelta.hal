@@ -31,15 +31,12 @@ loadrt hal_bb_gpio output_pins=816,822,823,824,825,826,914,923,925 input_pins=80
 loadrt [PRUCONF](DRIVER) prucode=$(HAL_RTMOD_DIR)/[PRUCONF](PRUBIN) [PRUCONF](CONFIG) halname=hpg
 loadrt pid count=2
 loadrt limit1 count=2
-
+loadrt comp
 
 # Python user-mode HAL module to read ADC value and generate a thermostat output for PWM
 # t = Thermistor table (only epcos_B57560G1104 or 1 supported for now)
 # a = analog input channel
 loadusr -Wn Therm hal_temp_bbb -n Therm -c 04:epcos_B57560G1104,05:epcos_B57560G1104 -b CRAMPS
-
-loadrt comp
-loadrt constant
 
 
 # ################################################
@@ -382,20 +379,11 @@ net e0.temp.meas    <= Therm.ch-04.value
 net e0.temp.meas    => pid.0.feedback
 
 sets e0.temp.set  0
-net e0.temp.set motion.analog-out-02 => pid.0.command
-
-#net e0.temp.set => Extruder0.Temp.set
-#net temp.done motion.digital-in-02 <= Extruder0.Temp.set.done
-
-#net s siggen.0.sine => comp.0.in1
-#net n constant.0.out => comp.0.in0
-#net a comp.0.out => parport.0.pin-16-out
-
-setp constant.0.value 50
+net e0.temp.set motion.analog-out-00 => pid.0.command
 
 net e0.temp.meas => comp.0.in1
 net e0.temp.set => comp.0.in0
-net a comp.0.out => motion.digital-in-02
+net a comp.0.out => motion.digital-in-00
 
 net e0.heater  <= pid.0.output
 net e0.heater  => limit1.0.in

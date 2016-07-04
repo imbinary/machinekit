@@ -32,7 +32,7 @@ loadrt hal_bb_gpio output_pins=816,822,823,824,825,826,914,923,925 input_pins=80
 loadrt [PRUCONF](DRIVER) prucode=$(HAL_RTMOD_DIR)/[PRUCONF](PRUBIN) [PRUCONF](CONFIG) halname=hpg
 loadrt pid count=3
 loadrt limit1 count=3
-
+loadrt comp count=2
 
 # Python user-mode HAL module to read ADC value and generate a thermostat output for PWM
 # t = Thermistor table (only epcos_B57560G1104 or 1 supported for now)
@@ -57,6 +57,9 @@ addf hpg.update             servo-thread
 addf bb_gpio.write                        servo-thread
 addf mux-gen.00                           servo-thread
 addf mux-gen.01                           servo-thread
+addf comp.0				  servo-thread
+addf comp.1                               servo-thread
+
 
 # ######################################################
 # Axis-of-motion Specific Configs (not the GUI)
@@ -220,7 +223,8 @@ setp hpg.stepgen.03.maxaccel        [AXIS_3]STEPGEN_MAX_ACC
 # P8.21 GPIO1.30
 #setp hpg.stepgen.03.dirpin          92
 
-
+###############################
+# MUXING EXTRUDER STEPPERS
 ###############################
 newsig stool s32
 newsig utool u32
@@ -440,7 +444,11 @@ net e0.temp.meas    <= Therm.ch-04.value
 net e0.temp.meas    => pid.0.feedback
 
 sets e0.temp.set  0
-net e0.temp.set     => pid.0.command
+net e0.temp.set motion.analog-out-01 => pid.0.command
+
+net e0.temp.meas => comp.0.in1		
+net e0.temp.set => comp.0.in0		
+net a comp.0.out => motion.digital-in-01
 
 net e0.heater  <= pid.0.output
 net e0.heater  => limit1.0.in
@@ -472,7 +480,11 @@ net e1.temp.meas    <= Therm.ch-06.value
 net e1.temp.meas    => pid.2.feedback
 
 sets e1.temp.set  0
-net e1.temp.set     => pid.2.command
+net e1.temp.set motion.analog-out-02  => pid.2.command
+
+net e1.temp.meas => comp.1.in1
+net e1.temp.set => comp.1.in0
+net a2 comp.1.out => motion.digital-in-02
 
 net e1.heater  <= pid.2.output
 net e1.heater  => limit1.2.in
