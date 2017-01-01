@@ -192,7 +192,7 @@ if (args.channels != ""):
             sys.exit(1)
         pin = Pin()
         pin.pin = int(pinRaw[0])
-        if ((pin.pin > 5) or (pin.pin < 0)):
+        if ((pin.pin > 6) or (pin.pin < 0)):
             print(("Pin not available"))
             sys.exit(1)
         checkAdcInput(pin)
