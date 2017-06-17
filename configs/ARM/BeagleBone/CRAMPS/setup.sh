@@ -50,6 +50,16 @@ if [ ! -r /sys/devices/ocp.*/helper.*/AIN0 ] ; then
 	exit 1;
 fi
 
+PRU=/sys/class/uio/uio0
+echo -n "Waiting for $PRU "
+
+while [ ! -r $PRU ]
+do
+    echo -n "."
+    sleep 1
+done
+echo OK
+
 if [ ! -r /sys/class/uio/uio0 ] ; then
 	echo PRU control files not found in /sys/class/uio/uio0 >&2
 	exit 1;
